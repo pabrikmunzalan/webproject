@@ -1,9 +1,64 @@
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Linkedin, Mail, Award, Code, Palette, Zap } from "lucide-react";
 
+interface TeamMember {
+  id: string;
+  name: string;
+  position: string;
+  bio: string | null;
+  avatar_url: string | null;
+  linkedin_url: string | null;
+  github_url: string | null;
+}
+
 const Team = () => {
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchTeam();
+
+    // Setup realtime subscription
+    const channel = supabase
+      .channel('team-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'team'
+        },
+        () => {
+          fetchTeam();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const fetchTeam = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('team')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setTeamMembers(data || []);
+    } catch (error) {
+      console.error('Error fetching team:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleWhatsAppClick = () => {
     const phoneNumber = "6282241590417";
     const message = "Halo! Saya ingin konsultasi dengan tim WebStudio Pro tentang project website saya.";
@@ -11,38 +66,31 @@ const Team = () => {
     window.open(whatsappUrl, '_blank');
   };
 
-  const teamMembers = [
-    {
-      name: "Dimas Pratama",
-      role: "Founder & Lead Developer",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face",
-      expertise: ["React", "Node.js", "DevOps"],
-      experience: "7+ tahun",
-      projects: "200+",
-      description: "Expert dalam full-stack development dengan fokus pada performa dan skalabilitas website.",
-      achievements: ["AWS Certified", "Google Developer Expert", "React Specialist"]
-    },
-    {
-      name: "Sari Wulandari", 
-      role: "UI/UX Designer",
-      image: "https://images.unsplash.com/photo-1494790108755-2616b612b605?w=300&h=300&fit=crop&crop=face",
-      expertise: ["Figma", "Adobe Creative", "User Research"],
-      experience: "5+ tahun",
-      projects: "150+",
-      description: "Spesialis design yang mengutamakan user experience dan conversion optimization.",
-      achievements: ["Adobe Certified Expert", "UX Design Award Winner", "Design Thinking Specialist"]
-    },
-    {
-      name: "Arif Rahman",
-      role: "SEO & Marketing Specialist", 
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop&crop=face",
-      expertise: ["SEO", "Google Ads", "Analytics"],
-      experience: "6+ tahun",
-      projects: "300+",
-      description: "Ahli dalam meningkatkan visibility website di mesin pencari dan digital marketing.",
-      achievements: ["Google Ads Certified", "SEO Expert", "Analytics Professional"]
-    }
-  ];
+  if (loading) {
+    return (
+      <section id="team" className="py-20 px-4 bg-gradient-to-b from-background to-secondary/10 relative overflow-hidden">
+        <div className="container mx-auto max-w-7xl">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-4">
+              Tim <span className="text-primary">Professional</span>
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[1, 2, 3].map((i) => (
+              <Card key={i} className="glass shadow-elegant animate-pulse">
+                <div className="h-80 bg-muted rounded-t-lg"></div>
+                <CardContent className="p-6">
+                  <div className="h-4 bg-muted rounded mb-2"></div>
+                  <div className="h-3 bg-muted rounded mb-4 w-2/3"></div>
+                  <div className="h-20 bg-muted rounded"></div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="team" className="py-20 px-4 bg-gradient-to-b from-background to-secondary/10 relative overflow-hidden">
@@ -95,81 +143,80 @@ const Team = () => {
 
         {/* Team Members */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-          {teamMembers.map((member, index) => (
-            <Card 
-              key={index} 
-              className="glass shadow-elegant hover:shadow-glow transition-all duration-300 transform hover:scale-105 animate-fade-up overflow-hidden"
-              style={{ animationDelay: `${0.3 + index * 0.1}s` }}
-            >
-              <div className="relative">
-                <img 
-                  src={member.image} 
-                  alt={member.name}
-                  className="w-full h-80 object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                <div className="absolute bottom-4 left-4 text-white">
-                  <h3 className="text-xl font-bold">{member.name}</h3>
-                  <p className="text-sm opacity-90">{member.role}</p>
-                </div>
-              </div>
-
-              <CardContent className="p-6 space-y-4">
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  {member.description}
-                </p>
-
-                {/* Stats */}
-                <div className="grid grid-cols-2 gap-4 py-4 border-y border-border/50">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-primary">{member.experience}</div>
-                    <div className="text-xs text-muted-foreground">Pengalaman</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-success">{member.projects}</div>
-                    <div className="text-xs text-muted-foreground">Project</div>
+          {teamMembers.length === 0 ? (
+            <div className="col-span-full text-center">
+              <p className="text-muted-foreground">Belum ada data tim yang tersedia.</p>
+            </div>
+          ) : (
+            teamMembers.map((member, index) => (
+              <Card 
+                key={member.id} 
+                className="glass shadow-elegant hover:shadow-glow transition-all duration-300 transform hover:scale-105 animate-fade-up overflow-hidden"
+                style={{ animationDelay: `${0.3 + index * 0.1}s` }}
+              >
+                <div className="relative">
+                  {member.avatar_url ? (
+                    <img 
+                      src={member.avatar_url} 
+                      alt={member.name}
+                      className="w-full h-80 object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-80 bg-muted flex items-center justify-center">
+                      <span className="text-4xl font-bold text-muted-foreground">
+                        {member.name.charAt(0)}
+                      </span>
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                  <div className="absolute bottom-4 left-4 text-white">
+                    <h3 className="text-xl font-bold">{member.name}</h3>
+                    <p className="text-sm opacity-90">{member.position}</p>
                   </div>
                 </div>
 
-                {/* Expertise */}
-                <div className="space-y-2">
-                  <h4 className="font-semibold text-sm">Keahlian:</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {member.expertise.map((skill, idx) => (
-                      <Badge key={idx} variant="secondary" className="text-xs">
-                        {skill}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
+                <CardContent className="p-6 space-y-4">
+                  {member.bio && (
+                    <p className="text-muted-foreground text-sm leading-relaxed">
+                      {member.bio}
+                    </p>
+                  )}
 
-                {/* Achievements */}
-                <div className="space-y-2">
-                  <h4 className="font-semibold text-sm">Sertifikasi:</h4>
-                  <div className="space-y-1">
-                    {member.achievements.map((achievement, idx) => (
-                      <div key={idx} className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <Award className="h-3 w-3 text-primary" />
-                        {achievement}
-                      </div>
-                    ))}
+                  {/* Contact buttons */}
+                  <div className="flex gap-2 pt-4">
+                    {member.linkedin_url && (
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="flex-1"
+                        onClick={() => window.open(member.linkedin_url!, '_blank')}
+                      >
+                        <Linkedin className="h-3 w-3 mr-1" />
+                        LinkedIn
+                      </Button>
+                    )}
+                    {member.github_url && (
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="flex-1"
+                        onClick={() => window.open(member.github_url!, '_blank')}
+                      >
+                        <Code className="h-3 w-3 mr-1" />
+                        Portfolio
+                      </Button>
+                    )}
+                    {!member.linkedin_url && !member.github_url && (
+                      <Button size="sm" variant="outline" className="flex-1">
+                        <Mail className="h-3 w-3 mr-1" />
+                        Email
+                      </Button>
+                    )}
                   </div>
-                </div>
-
-                {/* Contact buttons */}
-                <div className="flex gap-2 pt-4">
-                  <Button size="sm" variant="outline" className="flex-1">
-                    <Mail className="h-3 w-3 mr-1" />
-                    Email
-                  </Button>
-                  <Button size="sm" variant="outline" className="flex-1">
-                    <Linkedin className="h-3 w-3 mr-1" />
-                    LinkedIn
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            ))
+          )}
         </div>
 
         {/* CTA Section */}

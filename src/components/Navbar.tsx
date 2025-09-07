@@ -15,6 +15,7 @@ const Navbar = () => {
     { name: 'Beranda', href: '/' },
     { name: 'Layanan', href: '#services' },
     { name: 'Portfolio', href: '#portfolio' },
+    { name: 'Gallery', href: '#gallery' },
     { name: 'Tim', href: '#team' },
     { name: 'Testimoni', href: '#testimonials' },
     { name: 'Kontak', href: '#contact' },
