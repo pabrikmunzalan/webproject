@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebStudio Pro - Jasa Website Professional Indonesia</title>
+    <meta name="description" content="Jasa pembuatan website professional untuk mengembangkan bisnis Anda. Harga mulai Rp 800rb. Domain gratis, SEO ready, garansi 7 hari. Konsultasi gratis!" />
+    <meta name="author" content="WebStudio Pro" />
+    <meta name="keywords" content="jasa website, pembuatan website, website murah, jasa web design, website bisnis, website toko online" />
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#8b5cf6" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="WebStudio Pro" />
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Icons -->
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+
+    <meta property="og:title" content="WebStudio Pro - Jasa Website Professional Indonesia" />
+    <meta property="og:description" content="Jasa pembuatan website professional untuk mengembangkan bisnis Anda. Harga mulai Rp 800rb. Domain gratis, SEO ready, garansi 7 hari." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/og-image.jpg" />
+    <meta property="og:url" content="https://webstudiopro.com" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="WebStudio Pro - Jasa Website Professional" />
+    <meta name="twitter:description" content="Jasa pembuatan website professional untuk mengembangkan bisnis Anda. Konsultasi gratis!" />
+    <meta name="twitter:image" content="/og-image.jpg" />
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- PWA Service Worker -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('SW registered: ', registration);
+            })
+            .catch((registrationError) => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
+  </body>
+</html>
