@@ -74,7 +74,7 @@ const Services = () => {
   ];
 
   return (
-    <section className="py-20 px-4 bg-gradient-to-b from-background via-secondary/5 to-background relative overflow-hidden">
+    <section id="services" className="py-20 px-4 bg-gradient-to-b from-background via-secondary/5 to-background relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute top-10 right-10 w-32 h-32 bg-primary/5 rounded-full blur-2xl animate-float"></div>
       <div className="absolute bottom-10 left-10 w-24 h-24 bg-blue-500/5 rounded-full blur-xl animate-float" style={{ animationDelay: '2s' }}></div>

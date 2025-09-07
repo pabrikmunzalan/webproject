@@ -24,7 +24,9 @@ const Navbar = () => {
     setIsMenuOpen(false);
     if (href.startsWith('#')) {
       const element = document.querySelector(href);
-      element?.scrollIntoView({ behavior: 'smooth' });
+      element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else if (href === '/') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 

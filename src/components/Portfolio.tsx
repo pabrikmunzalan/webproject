@@ -47,7 +47,7 @@ const Portfolio = () => {
 
   if (loading) {
     return (
-      <section id="portfolio" className="py-20 px-4 bg-secondary/10 relative overflow-hidden">
+      <section id="portfolio" className="py-20 px-4 bg-gradient-to-b from-secondary/5 to-background relative overflow-hidden">
         <div className="container mx-auto max-w-7xl">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-4">
@@ -60,7 +60,7 @@ const Portfolio = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <Card key={i} className="glass shadow-elegant animate-pulse">
-                <div className="h-48 bg-muted rounded-t-lg"></div>
+                <div className="h-64 bg-muted rounded-t-lg"></div>
                 <CardContent className="p-6">
                   <div className="h-4 bg-muted rounded mb-2"></div>
                   <div className="h-3 bg-muted rounded mb-4 w-2/3"></div>
@@ -75,7 +75,7 @@ const Portfolio = () => {
   }
 
   return (
-    <section id="portfolio" className="py-20 px-4 bg-secondary/10 relative overflow-hidden">
+    <section id="portfolio" className="py-20 px-4 bg-gradient-to-b from-secondary/5 to-background relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute top-20 left-20 w-40 h-40 bg-blue-500/5 rounded-full blur-3xl animate-float"></div>
       <div className="absolute bottom-20 right-20 w-32 h-32 bg-primary/5 rounded-full blur-2xl animate-float" style={{ animationDelay: '1.5s' }}></div>
@@ -102,14 +102,14 @@ const Portfolio = () => {
                     <img 
                       src={item.image_url} 
                       alt={item.title}
-                      className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
+                      className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-300"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200' viewBox='0 0 400 200'%3E%3Crect width='400' height='200' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='16' fill='%236b7280'%3E${item.title}%3C/text%3E%3C/svg%3E";
                       }}
                     />
                   ) : (
-                    <div className="w-full h-48 bg-muted flex items-center justify-center">
+                    <div className="w-full h-64 bg-muted flex items-center justify-center">
                       <span className="text-muted-foreground">{item.title}</span>
                     </div>
                   )}

@@ -45,7 +45,7 @@ const Team = () => {
   ];
 
   return (
-    <section className="py-20 px-4 bg-gradient-to-b from-background to-secondary/10 relative overflow-hidden">
+    <section id="team" className="py-20 px-4 bg-gradient-to-b from-background to-secondary/10 relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute top-20 right-20 w-40 h-40 bg-primary/5 rounded-full blur-3xl animate-float"></div>
       <div className="absolute bottom-20 left-20 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl animate-float" style={{ animationDelay: '2s' }}></div>
@@ -105,7 +105,7 @@ const Team = () => {
                 <img 
                   src={member.image} 
                   alt={member.name}
-                  className="w-full h-64 object-cover"
+                  className="w-full h-80 object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                 <div className="absolute bottom-4 left-4 text-white">

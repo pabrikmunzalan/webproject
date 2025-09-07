@@ -90,7 +90,7 @@ const Testimonials = () => {
   };
 
   return (
-    <section className="py-20 px-4 bg-gradient-to-b from-secondary/5 to-background relative overflow-hidden">
+    <section id="testimonials" className="py-20 px-4 bg-gradient-to-b from-secondary/5 to-background relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute top-10 left-10 w-32 h-32 bg-primary/5 rounded-full blur-2xl animate-float"></div>
       <div className="absolute bottom-10 right-10 w-40 h-40 bg-blue-500/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }}></div>
@@ -146,7 +146,7 @@ const Testimonials = () => {
                     <img 
                       src={testimonial.image} 
                       alt={testimonial.name}
-                      className="w-16 h-16 rounded-full object-cover border-2 border-primary/20"
+                      className="w-20 h-20 rounded-full object-cover border-2 border-primary/20"
                     />
                     {testimonial.verified && (
                       <div className="absolute -bottom-1 -right-1 bg-success rounded-full p-1">

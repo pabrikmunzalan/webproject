@@ -115,7 +115,7 @@ const Blog = () => {
                 <img 
                   src={post.image} 
                   alt={post.title}
-                  className="w-full h-64 lg:h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  className="w-full h-80 lg:h-full object-cover group-hover:scale-110 transition-transform duration-300"
                 />
                 <div className="absolute top-4 left-4">
                   <Badge className="bg-primary text-primary-foreground">
@@ -171,7 +171,7 @@ const Blog = () => {
                 <img 
                   src={post.image} 
                   alt={post.title}
-                  className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
+                  className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-300"
                 />
                 <div className="absolute top-4 left-4">
                   <Badge variant="secondary" className="bg-white/90 text-foreground">

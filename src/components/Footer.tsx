@@ -10,7 +10,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-card/80 backdrop-blur-sm border-t shadow-elegant">
+    <footer id="contact" className="bg-card/80 backdrop-blur-sm border-t shadow-elegant">
       <div className="container mx-auto max-w-7xl px-4 py-16 relative">
         {/* Background decoration */}
         <div className="absolute top-0 left-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -z-10"></div>
