@@ -19,6 +19,26 @@ const Portfolio = () => {
 
   useEffect(() => {
     fetchPortfolio();
+
+    // Setup realtime subscription
+    const channel = supabase
+      .channel('portfolio-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'portfolio'
+        },
+        () => {
+          fetchPortfolio();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const fetchPortfolio = async () => {
