@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, LogOut, Users, Briefcase, MessageSquare, Camera, UserCheck } from 'lucide-react';
+import { Loader2, LogOut, Users, Briefcase, MessageSquare, Camera, UserCheck, Home } from 'lucide-react';
 import PortfolioAdmin from '@/components/admin/PortfolioAdmin';
 import TestimonialsAdmin from '@/components/admin/TestimonialsAdmin';
 import TeamAdmin from '@/components/admin/TeamAdmin';
@@ -61,6 +61,12 @@ const AdminDashboard = () => {
             <span className="text-sm text-muted-foreground">
               Selamat datang, {user?.email}
             </span>
+            <Button asChild variant="outline" className="gap-2">
+              <Link to="/">
+                <Home className="h-4 w-4" />
+                Beranda
+              </Link>
+            </Button>
             <Button variant="outline" onClick={handleSignOut} className="gap-2">
               <LogOut className="h-4 w-4" />
               Keluar
