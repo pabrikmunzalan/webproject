@@ -1,14 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Smartphone, Globe, Zap, Play } from "lucide-react";
+import ABTestCTA from "@/components/ABTestCTA";
 
 const Hero = () => {
-  const handleWhatsAppClick = () => {
-    const phoneNumber = "6282241590417";
-    const message = "Halo! Saya tertarik dengan jasa pembuatan website. Bisa info lebih lanjut?";
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
-  };
-
   const handleVideoPlay = () => {
     // Placeholder for video modal or redirect to demo video
     const videoMessage = "Halo! Saya ingin melihat demo video dan portfolio lengkap website yang pernah dibuat.";
@@ -118,28 +112,23 @@ const Hero = () => {
             </div>
           </div>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8 animate-fade-up" style={{
+          {/* CTA Buttons - A/B Testing */}
+          <div className="animate-fade-up" style={{
             animationDelay: '0.6s'
           }}>
-            <Button 
-              size="lg" 
-              className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-primary-foreground px-8 py-6 text-lg font-semibold shadow-glow hover:shadow-2xl transition-all duration-300 hover:scale-105 animate-pulse" 
-              onClick={handleWhatsAppClick}
-            >
-              Konsultasi Gratis via WhatsApp
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+            <ABTestCTA />
             
-            <Button 
-              variant="outline"
-              size="lg"
-              className="px-8 py-6 text-lg font-semibold border-primary/20 hover:bg-primary/5"
-              onClick={handleVideoPlay}
-            >
-              <Play className="mr-2 h-5 w-5" />
-              Lihat Demo Video
-            </Button>
+            <div className="flex justify-center mt-4">
+              <Button 
+                variant="outline"
+                size="lg"
+                className="px-8 py-6 text-lg font-semibold border-primary/20 hover:bg-primary/5"
+                onClick={handleVideoPlay}
+              >
+                <Play className="mr-2 h-5 w-5" />
+                Lihat Demo Video
+              </Button>
+            </div>
           </div>
           
           <p className="text-sm text-muted-foreground animate-fade-up" style={{
