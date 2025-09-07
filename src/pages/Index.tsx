@@ -5,6 +5,8 @@ import Portfolio from "@/components/Portfolio";
 import StatsCounter from "@/components/StatsCounter";
 import TrustBadges from "@/components/TrustBadges";
 import ProcessTimeline from "@/components/ProcessTimeline";
+import CaseStudies from "@/components/CaseStudies";
+import LeadMagnet from "@/components/LeadMagnet";
 import Gallery from "@/components/Gallery";
 import Testimonials from "@/components/Testimonials";
 import FAQ from "@/components/FAQ";
@@ -24,9 +26,11 @@ const Index = () => {
       <StatsCounter />
       <Services />
       <Portfolio />
+      <CaseStudies />
       <ProcessTimeline />
-      <Gallery />
       <PriceCalculator />
+      <LeadMagnet />
+      <Gallery />
       <Team />
       <Testimonials />
       <Guarantee />
