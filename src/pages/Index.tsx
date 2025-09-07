@@ -1,8 +1,5 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
-import UrgencyBanner from "@/components/UrgencyBanner";
-import ExitIntentPopup from "@/components/ExitIntentPopup";
-import AnalyticsTracker from "@/components/AnalyticsTracker";
 import Services from "@/components/Services";
 import Portfolio from "@/components/Portfolio";
 import StatsCounter from "@/components/StatsCounter";
@@ -23,14 +20,7 @@ import Blog from "@/components/Blog";
 const Index = () => {
   return (
     <div className="min-h-screen">
-      {/* Analytics & Conversion Tracking */}
-      <AnalyticsTracker />
-      
-      {/* Navigation */}
       <Navbar />
-      <UrgencyBanner />
-      
-      {/* Main Content */}
       <Hero />
       <TrustBadges />
       <StatsCounter />
@@ -47,10 +37,7 @@ const Index = () => {
       <FAQ />
       <Blog />
       <Footer />
-      
-      {/* Floating & Conversion Elements */}
       <FloatingWhatsApp />
-      <ExitIntentPopup />
     </div>
   );
 };
