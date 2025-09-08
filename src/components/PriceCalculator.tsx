@@ -13,10 +13,10 @@ const PriceCalculator = () => {
   const [totalPrice, setTotalPrice] = useState(0);
 
   const basePrice = {
-    landing: 800000,
-    company: 1200000,
-    ecommerce: 2500000,
-    custom: 1500000
+    landing: 1200000,
+    company: 1800000,
+    ecommerce: 3500000,
+    custom: 2500000
   };
 
   const pagePrice = {
@@ -97,10 +97,10 @@ const PriceCalculator = () => {
                   <SelectValue placeholder="Pilih tipe website" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="landing">Landing Page (Rp 800.000)</SelectItem>
-                  <SelectItem value="company">Company Profile (Rp 1.200.000)</SelectItem>
-                  <SelectItem value="custom">Website Custom (Rp 1.500.000)</SelectItem>
-                  <SelectItem value="ecommerce">E-Commerce (Rp 2.500.000)</SelectItem>
+                  <SelectItem value="landing">Landing Page (Rp 1.200.000)</SelectItem>
+                  <SelectItem value="company">Company Profile (Rp 1.800.000)</SelectItem>
+                  <SelectItem value="custom">Website Custom (Rp 2.500.000)</SelectItem>
+                  <SelectItem value="ecommerce">E-Commerce (Rp 3.500.000)</SelectItem>
                 </SelectContent>
               </Select>
             </div>

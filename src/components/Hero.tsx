@@ -39,7 +39,7 @@ const Hero = () => {
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
               <strong className="text-primary">Tingkatkan omzet hingga 300%</strong> dengan website modern, responsif, dan berkualitas tinggi. 
-              Mulai dari Rp 800.000 hingga Rp 3.000.000. 
+              Mulai dari Rp 1.200.000 hingga Rp 5.000.000. 
               <br /><span className="text-success font-semibold">🎯 Garansi website selesai dalam 7 hari atau GRATIS!</span>
             </p>
           </div>
