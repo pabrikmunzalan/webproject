@@ -147,7 +147,49 @@ const Portfolio = () => {
                       <span className="text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">
                         {item.category}
                       </span>
-                      {item.demo_url && <ExternalLink className="h-4 w-4 text-muted-foreground cursor-pointer" onClick={() => window.open(item.demo_url!, '_blank')} />}
+                   {item.demo_url && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            // Check if it's a video file
+                            const videoExtensions = ['.mp4', '.webm', '.mov', '.avi', '.mkv'];
+                            const isVideo = videoExtensions.some(ext => 
+                              item.demo_url!.toLowerCase().includes(ext)
+                            );
+                            
+                            if (isVideo) {
+                              // Open video in modal instead of new tab
+                              const modal = document.createElement('div');
+                              modal.className = 'fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4';
+                              modal.innerHTML = `
+                                <div class="relative w-full max-w-4xl">
+                                  <button class="absolute -top-10 right-0 text-white hover:text-gray-300 text-2xl">&times;</button>
+                                  <video controls autoplay class="w-full h-auto max-h-[80vh] rounded-lg">
+                                    <source src="${item.demo_url}" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                  </video>
+                                </div>
+                              `;
+                              
+                              modal.onclick = (e) => {
+                                if (e.target === modal || (e.target as HTMLElement).tagName === 'BUTTON') {
+                                  document.body.removeChild(modal);
+                                }
+                              };
+                              
+                              document.body.appendChild(modal);
+                            } else {
+                              // Open link normally
+                              window.open(item.demo_url!, '_blank');
+                            }
+                          }}
+                          className="h-8 w-8 p-0 hover:bg-primary/10"
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                        </Button>
+                      )}
                     </div>
                     <h3 className="text-xl font-bold text-card-foreground">{item.title}</h3>
                     {item.description && (
