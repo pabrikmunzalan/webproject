@@ -33,19 +33,20 @@ All colors MUST be HSL.
     --success: 142.1 76.2% 36.3%;
     --success-foreground: 355.7 100% 97.3%;
     
-    /* Enhanced gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(262.1 83.3% 57.8%), hsl(213.3 93.9% 67.8%));
-    --gradient-secondary: linear-gradient(135deg, hsl(220 13% 95%), hsl(215 28% 97%));
-    --gradient-glass: linear-gradient(135deg, hsla(0 0% 100% / 0.1), hsla(0 0% 100% / 0.05));
-    --gradient-glow: radial-gradient(circle at 50% 50%, hsl(262.1 83.3% 67.8% / 0.3) 0%, transparent 50%);
-    
-    /* Advanced shadows */
-    --shadow-sm: 0 1px 3px 0 hsl(215 25% 12% / 0.1);
-    --shadow-md: 0 4px 6px -1px hsl(215 25% 12% / 0.1), 0 2px 4px -1px hsl(215 25% 12% / 0.06);
-    --shadow-lg: 0 10px 15px -3px hsl(215 25% 12% / 0.1), 0 4px 6px -2px hsl(215 25% 12% / 0.05);
-    --shadow-xl: 0 20px 25px -5px hsl(215 25% 12% / 0.1), 0 10px 10px -5px hsl(215 25% 12% / 0.04);
-    --shadow-2xl: 0 25px 50px -12px hsl(215 25% 12% / 0.25);
-    --shadow-glow: 0 0 20px hsl(262.1 83.3% 57.8% / 0.3);
+  /* Enhanced gradients */
+  --gradient-primary: linear-gradient(135deg, hsl(262.1 83.3% 57.8%), hsl(213.3 93.9% 67.8%));
+  --gradient-secondary: linear-gradient(135deg, hsl(220 13% 95%), hsl(215 28% 97%));
+  --gradient-glass: linear-gradient(135deg, hsla(0 0% 100% / 0.1), hsla(0 0% 100% / 0.05));
+  --gradient-glow: radial-gradient(circle at 50% 50%, hsl(262.1 83.3% 67.8% / 0.3) 0%, transparent 50%);
+  
+  /* Advanced shadows */
+  --shadow-sm: 0 1px 3px 0 hsl(215 25% 12% / 0.1);
+  --shadow-md: 0 4px 6px -1px hsl(215 25% 12% / 0.1), 0 2px 4px -1px hsl(215 25% 12% / 0.06);
+  --shadow-lg: 0 10px 15px -3px hsl(215 25% 12% / 0.1), 0 4px 6px -2px hsl(215 25% 12% / 0.05);
+  --shadow-xl: 0 20px 25px -5px hsl(215 25% 12% / 0.1), 0 10px 10px -5px hsl(215 25% 12% / 0.04);
+  --shadow-2xl: 0 25px 50px -12px hsl(215 25% 12% / 0.25);
+  --shadow-glow: 0 0 20px hsl(262.1 83.3% 57.8% / 0.3);
+  --shadow-elegant: 0 10px 30px -10px hsl(262.1 83.3% 57.8% / 0.3);
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
