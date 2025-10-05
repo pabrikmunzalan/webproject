@@ -15,19 +15,22 @@ const Navbar = () => {
     { name: 'Beranda', href: '/' },
     { name: 'Layanan', href: '#services' },
     { name: 'Portfolio', href: '#portfolio' },
-    { name: 'Gallery', href: '#gallery' },
-    { name: 'Tim', href: '#team' },
     { name: 'Testimoni', href: '#testimonials' },
-    { name: 'Kontak', href: '#contact' },
+    { name: 'Tentang Kami', href: '/about' },
+    { name: 'Blog', href: '/blog' },
   ];
 
   const handleNavClick = (href: string) => {
     setIsMenuOpen(false);
     if (href.startsWith('#')) {
-      const element = document.querySelector(href);
-      element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else if (href === '/') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      // Scroll to section on same page
+      if (location.pathname === '/') {
+        const element = document.querySelector(href);
+        element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        // Navigate to home then scroll
+        window.location.href = '/' + href;
+      }
     }
   };
 
@@ -46,13 +49,23 @@ const Navbar = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {navigationItems.map((item) => (
-              <button
-                key={item.name}
-                onClick={() => handleNavClick(item.href)}
-                className="text-foreground hover:text-primary transition-colors duration-200 cursor-pointer"
-              >
-                {item.name}
-              </button>
+              item.href.startsWith('#') ? (
+                <button
+                  key={item.name}
+                  onClick={() => handleNavClick(item.href)}
+                  className="text-foreground hover:text-primary transition-colors duration-200 cursor-pointer"
+                >
+                  {item.name}
+                </button>
+              ) : (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className="text-foreground hover:text-primary transition-colors duration-200"
+                >
+                  {item.name}
+                </Link>
+              )
             ))}
           </div>
 
@@ -117,13 +130,24 @@ const Navbar = () => {
           <div className="md:hidden py-4 border-t border-border/40">
             <div className="flex flex-col space-y-3">
               {navigationItems.map((item) => (
-                <button
-                  key={item.name}
-                  onClick={() => handleNavClick(item.href)}
-                  className="text-left text-foreground hover:text-primary transition-colors duration-200"
-                >
-                  {item.name}
-                </button>
+                item.href.startsWith('#') ? (
+                  <button
+                    key={item.name}
+                    onClick={() => handleNavClick(item.href)}
+                    className="text-left text-foreground hover:text-primary transition-colors duration-200"
+                  >
+                    {item.name}
+                  </button>
+                ) : (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    onClick={() => setIsMenuOpen(false)}
+                    className="text-left text-foreground hover:text-primary transition-colors duration-200"
+                  >
+                    {item.name}
+                  </Link>
+                )
               ))}
               <div className="pt-3 border-t border-border/40">
                 {user ? (

@@ -1,21 +1,16 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import Services from "@/components/Services";
-import Portfolio from "@/components/Portfolio";
-import StatsCounter from "@/components/StatsCounter";
+import PortfolioResults from "@/components/PortfolioResults";
 import TrustBadges from "@/components/TrustBadges";
 import ProcessTimeline from "@/components/ProcessTimeline";
-import CaseStudies from "@/components/CaseStudies";
 import LeadMagnet from "@/components/LeadMagnet";
-import Gallery from "@/components/Gallery";
 import Testimonials from "@/components/Testimonials";
 import FAQ from "@/components/FAQ";
 import Guarantee from "@/components/Guarantee";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import Footer from "@/components/Footer";
 import PriceCalculator from "@/components/PriceCalculator";
-import Team from "@/components/Team";
-import Blog from "@/components/Blog";
 
 const Index = () => {
   return (
@@ -23,19 +18,14 @@ const Index = () => {
       <Navbar />
       <Hero />
       <TrustBadges />
-      <StatsCounter />
       <Services />
-      <Portfolio />
-      <CaseStudies />
+      <PortfolioResults />
       <ProcessTimeline />
       <PriceCalculator />
-      <LeadMagnet />
-      <Gallery />
-      <Team />
       <Testimonials />
       <Guarantee />
       <FAQ />
-      <Blog />
+      <LeadMagnet />
       <Footer />
       <FloatingWhatsApp />
     </div>

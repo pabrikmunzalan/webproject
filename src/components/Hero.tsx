@@ -21,16 +21,13 @@ const Hero = () => {
         <div className="absolute inset-0 bg-gradient-glow opacity-30 animate-glow"></div>
       </div>
       
-      {/* Multiple Floating Orbs */}
+      {/* Floating orbs - simplified to 3 */}
       <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/10 rounded-full blur-3xl animate-float"></div>
       <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-blue-500/10 rounded-full blur-2xl animate-float" style={{
         animationDelay: '1s'
       }}></div>
       <div className="absolute top-3/4 left-1/3 w-32 h-32 bg-success/10 rounded-full blur-xl animate-float" style={{
         animationDelay: '2s'
-      }}></div>
-      <div className="absolute bottom-1/3 left-1/5 w-40 h-40 bg-accent/10 rounded-full blur-2xl animate-float" style={{
-        animationDelay: '0.5s'
       }}></div>
       
       {/* Animated Particle Effects */}
@@ -133,12 +130,12 @@ const Hero = () => {
               <div className="absolute -inset-2 bg-gradient-to-r from-primary via-primary-glow to-blue-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition-all duration-500"></div>
             </div>
             
-            {/* Enhanced Stats Grid */}
-            <div className="grid grid-cols-2 gap-4 text-center">
+            {/* Enhanced Stats Grid - simplified to 3 key metrics */}
+            <div className="grid grid-cols-3 gap-4 text-center">
               <div className="relative p-6 glass rounded-xl shadow-elegant hover:shadow-glow transition-all duration-300 group hover:scale-105">
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div className="relative">
-                  <div className="text-3xl font-bold text-primary animate-pulse">250+</div>
+                  <div className="text-3xl font-bold text-primary animate-pulse">500+</div>
                   <div className="text-xs text-muted-foreground font-medium">Website Dibuat</div>
                   <div className="w-full h-1 bg-primary/20 rounded-full mt-2 overflow-hidden">
                     <div className="h-full bg-primary rounded-full animate-pulse" style={{ width: '85%' }}></div>
@@ -150,7 +147,7 @@ const Hero = () => {
                 <div className="absolute inset-0 bg-gradient-to-br from-success/5 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div className="relative">
                   <div className="text-3xl font-bold text-success animate-pulse">98%</div>
-                  <div className="text-xs text-muted-foreground font-medium">Client Puas</div>
+                  <div className="text-xs text-muted-foreground font-medium">Kepuasan Client</div>
                   <div className="w-full h-1 bg-success/20 rounded-full mt-2 overflow-hidden">
                     <div className="h-full bg-success rounded-full animate-pulse" style={{ width: '98%' }}></div>
                   </div>
@@ -160,21 +157,10 @@ const Hero = () => {
               <div className="relative p-6 glass rounded-xl shadow-elegant hover:shadow-glow transition-all duration-300 group hover:scale-105">
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div className="relative">
-                  <div className="text-3xl font-bold text-blue-600 animate-pulse">7</div>
+                  <div className="text-3xl font-bold text-blue-600 animate-pulse">14</div>
                   <div className="text-xs text-muted-foreground font-medium">Hari Rata-rata</div>
                   <div className="w-full h-1 bg-blue-500/20 rounded-full mt-2 overflow-hidden">
                     <div className="h-full bg-blue-600 rounded-full animate-pulse" style={{ width: '70%' }}></div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="relative p-6 glass rounded-xl shadow-elegant hover:shadow-glow transition-all duration-300 group hover:scale-105">
-                <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div className="relative">
-                  <div className="text-3xl font-bold text-orange-600 animate-pulse">24/7</div>
-                  <div className="text-xs text-muted-foreground font-medium">Support</div>
-                  <div className="w-full h-1 bg-orange-500/20 rounded-full mt-2 overflow-hidden">
-                    <div className="h-full bg-orange-600 rounded-full animate-pulse" style={{ width: '100%' }}></div>
                   </div>
                 </div>
               </div>
