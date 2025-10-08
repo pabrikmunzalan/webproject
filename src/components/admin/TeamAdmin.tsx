@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, Trash2, Linkedin, Github, ExternalLink } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import ImageUpload from '@/components/admin/ImageUpload';
 
 interface Team {
   id: string;
@@ -184,16 +185,12 @@ const TeamAdmin = () => {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="avatar_url">URL Foto</Label>
-                <Input
-                  id="avatar_url"
-                  type="url"
-                  value={formData.avatar_url}
-                  onChange={(e) => setFormData({ ...formData, avatar_url: e.target.value })}
-                  placeholder="https://example.com/avatar.jpg"
-                />
-              </div>
+              <ImageUpload
+                bucket="team-avatars"
+                currentImage={formData.avatar_url}
+                onImageUploaded={(url) => setFormData({ ...formData, avatar_url: url })}
+                label="Foto Profil"
+              />
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">

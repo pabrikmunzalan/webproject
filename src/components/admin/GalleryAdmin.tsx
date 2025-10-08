@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, Trash2, Image } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import ImageUpload from '@/components/admin/ImageUpload';
 
 interface Gallery {
   id: string;
@@ -176,17 +177,13 @@ const GalleryAdmin = () => {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="image_url">URL Gambar</Label>
-                <Input
-                  id="image_url"
-                  type="url"
-                  value={formData.image_url}
-                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                  placeholder="https://example.com/image.jpg"
-                  required
-                />
-              </div>
+              <ImageUpload
+                bucket="gallery-images"
+                currentImage={formData.image_url}
+                onImageUploaded={(url) => setFormData({ ...formData, image_url: url })}
+                label="Gambar Gallery"
+                required
+              />
 
               {error && (
                 <Alert variant="destructive">

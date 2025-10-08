@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Plus, Edit, Trash2, Star } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import ImageUpload from '@/components/admin/ImageUpload';
 
 interface Testimonial {
   id: string;
@@ -224,16 +225,12 @@ const TestimonialsAdmin = () => {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="avatar_url">URL Foto (Opsional)</Label>
-                <Input
-                  id="avatar_url"
-                  type="url"
-                  value={formData.avatar_url}
-                  onChange={(e) => setFormData({ ...formData, avatar_url: e.target.value })}
-                  placeholder="https://example.com/avatar.jpg"
-                />
-              </div>
+              <ImageUpload
+                bucket="testimonial-avatars"
+                currentImage={formData.avatar_url}
+                onImageUploaded={(url) => setFormData({ ...formData, avatar_url: url })}
+                label="Foto Klien (Opsional)"
+              />
 
               {error && (
                 <Alert variant="destructive">
