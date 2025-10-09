@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,9 +9,12 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, Linkedin, Github, ExternalLink } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Plus, Edit, Trash2, Linkedin, Github } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import ImageUpload from '@/components/admin/ImageUpload';
+import BulkActions from '@/components/admin/BulkActions';
+import SearchFilterBar from '@/components/admin/SearchFilterBar';
 
 interface Team {
   id: string;
@@ -21,6 +24,7 @@ interface Team {
   avatar_url: string | null;
   linkedin_url: string | null;
   github_url: string | null;
+  published: boolean;
   created_at: string;
 }
 
@@ -35,9 +39,14 @@ const TeamAdmin = () => {
     bio: '',
     avatar_url: '',
     linkedin_url: '',
-    github_url: ''
+    github_url: '',
+    published: true
   });
   const [error, setError] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('newest');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -84,7 +93,7 @@ const TeamAdmin = () => {
 
       setIsDialogOpen(false);
       setEditingItem(null);
-      setFormData({ name: '', position: '', bio: '', avatar_url: '', linkedin_url: '', github_url: '' });
+      setFormData({ name: '', position: '', bio: '', avatar_url: '', linkedin_url: '', github_url: '', published: true });
       fetchTeam();
     } catch (err: any) {
       setError(err.message);
@@ -99,7 +108,8 @@ const TeamAdmin = () => {
       bio: item.bio || '',
       avatar_url: item.avatar_url || '',
       linkedin_url: item.linkedin_url || '',
-      github_url: item.github_url || ''
+      github_url: item.github_url || '',
+      published: item.published
     });
     setIsDialogOpen(true);
   };
@@ -123,9 +133,99 @@ const TeamAdmin = () => {
 
   const resetForm = () => {
     setEditingItem(null);
-    setFormData({ name: '', position: '', bio: '', avatar_url: '', linkedin_url: '', github_url: '' });
+    setFormData({ name: '', position: '', bio: '', avatar_url: '', linkedin_url: '', github_url: '', published: true });
     setError(null);
   };
+
+  const handleBulkDelete = async () => {
+    try {
+      const { error } = await supabase
+        .from('team')
+        .delete()
+        .in('id', selectedIds);
+
+      if (error) throw error;
+      toast({ title: `${selectedIds.length} item berhasil dihapus` });
+      setSelectedIds([]);
+      fetchTeam();
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const handleBulkPublish = async () => {
+    try {
+      const { error } = await supabase
+        .from('team')
+        .update({ published: true })
+        .in('id', selectedIds);
+
+      if (error) throw error;
+      toast({ title: `${selectedIds.length} item berhasil dipublish` });
+      setSelectedIds([]);
+      fetchTeam();
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const handleBulkUnpublish = async () => {
+    try {
+      const { error } = await supabase
+        .from('team')
+        .update({ published: false })
+        .in('id', selectedIds);
+
+      if (error) throw error;
+      toast({ title: `${selectedIds.length} item berhasil di-draft` });
+      setSelectedIds([]);
+      fetchTeam();
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.length === filteredTeam.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(filteredTeam.map(item => item.id));
+    }
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev =>
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
+  const filteredTeam = useMemo(() => {
+    return team.filter(item => {
+      const matchesSearch = searchQuery === '' || 
+        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.position.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (item.bio?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false);
+      
+      const matchesStatus = statusFilter === 'all' || 
+        (statusFilter === 'published' && item.published) ||
+        (statusFilter === 'draft' && !item.published);
+      
+      return matchesSearch && matchesStatus;
+    }).sort((a, b) => {
+      switch (sortBy) {
+        case 'newest':
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        case 'oldest':
+          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        case 'title':
+          return a.name.localeCompare(b.name);
+        case 'title-desc':
+          return b.name.localeCompare(a.name);
+        default:
+          return 0;
+      }
+    });
+  }, [team, searchQuery, statusFilter, sortBy]);
 
   if (loading) return <div>Loading...</div>;
 
@@ -215,6 +315,19 @@ const TeamAdmin = () => {
                 </div>
               </div>
 
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="published"
+                  checked={formData.published}
+                  onCheckedChange={(checked) => 
+                    setFormData({ ...formData, published: checked as boolean })
+                  }
+                />
+                <Label htmlFor="published" className="cursor-pointer">
+                  Publish (tampilkan di website)
+                </Label>
+              </div>
+
               {error && (
                 <Alert variant="destructive">
                   <AlertDescription>{error}</AlertDescription>
@@ -238,10 +351,50 @@ const TeamAdmin = () => {
         </Dialog>
       </div>
 
+      <SearchFilterBar
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        categoryFilter=""
+        onCategoryChange={() => {}}
+        statusFilter={statusFilter}
+        onStatusChange={setStatusFilter}
+        sortBy={sortBy}
+        onSortChange={setSortBy}
+        showCategoryFilter={false}
+      />
+
+      <BulkActions
+        selectedCount={selectedIds.length}
+        onDelete={handleBulkDelete}
+        onPublish={handleBulkPublish}
+        onUnpublish={handleBulkUnpublish}
+        onClearSelection={() => setSelectedIds([])}
+      />
+
+      {filteredTeam.length > 0 && (
+        <div className="flex items-center gap-2 mb-4">
+          <Checkbox
+            id="select-all"
+            checked={selectedIds.length === filteredTeam.length}
+            onCheckedChange={toggleSelectAll}
+          />
+          <Label htmlFor="select-all" className="cursor-pointer text-sm">
+            Pilih Semua ({filteredTeam.length} item)
+          </Label>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {team.map((item) => (
-          <Card key={item.id} className="glass shadow-elegant hover:shadow-glow transition-all duration-300">
-            <CardHeader className="text-center">
+        {filteredTeam.map((item) => (
+          <Card key={item.id} className="glass shadow-elegant hover:shadow-glow transition-all duration-300 relative">
+            <div className="absolute top-2 left-2 z-10">
+              <Checkbox
+                checked={selectedIds.includes(item.id)}
+                onCheckedChange={() => toggleSelect(item.id)}
+                className="bg-background"
+              />
+            </div>
+            <CardHeader className="text-center pt-8">
               <Avatar className="w-24 h-24 mx-auto mb-4">
                 <AvatarImage src={item.avatar_url || undefined} />
                 <AvatarFallback className="text-xl">
@@ -249,8 +402,11 @@ const TeamAdmin = () => {
                 </AvatarFallback>
               </Avatar>
               <CardTitle className="text-lg">{item.name}</CardTitle>
-              <CardDescription>
+              <CardDescription className="flex justify-center gap-2">
                 <Badge variant="secondary">{item.position}</Badge>
+                <Badge variant={item.published ? "default" : "outline"} className="text-xs">
+                  {item.published ? "Published" : "Draft"}
+                </Badge>
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -307,6 +463,14 @@ const TeamAdmin = () => {
           </Card>
         ))}
       </div>
+
+      {filteredTeam.length === 0 && team.length > 0 && (
+        <Card>
+          <CardContent className="text-center py-8">
+            <p className="text-muted-foreground">Tidak ada hasil yang sesuai dengan filter.</p>
+          </CardContent>
+        </Card>
+      )}
 
       {team.length === 0 && (
         <Card>

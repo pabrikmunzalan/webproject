@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,9 +8,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, Edit, Trash2, ExternalLink } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import ImageUpload from '@/components/admin/ImageUpload';
+import BulkActions from '@/components/admin/BulkActions';
+import SearchFilterBar from '@/components/admin/SearchFilterBar';
 
 interface Portfolio {
   id: string;
@@ -19,6 +22,7 @@ interface Portfolio {
   description: string | null;
   image_url: string | null;
   demo_url: string | null;
+  published: boolean;
   created_at: string;
 }
 
@@ -32,9 +36,15 @@ const PortfolioAdmin = () => {
     category: '',
     description: '',
     image_url: '',
-    demo_url: ''
+    demo_url: '',
+    published: true
   });
   const [error, setError] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('newest');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -81,7 +91,7 @@ const PortfolioAdmin = () => {
 
       setIsDialogOpen(false);
       setEditingItem(null);
-      setFormData({ title: '', category: '', description: '', image_url: '', demo_url: '' });
+      setFormData({ title: '', category: '', description: '', image_url: '', demo_url: '', published: true });
       fetchPortfolio();
     } catch (err: any) {
       setError(err.message);
@@ -95,7 +105,8 @@ const PortfolioAdmin = () => {
       category: item.category,
       description: item.description || '',
       image_url: item.image_url || '',
-      demo_url: item.demo_url || ''
+      demo_url: item.demo_url || '',
+      published: item.published
     });
     setIsDialogOpen(true);
   };
@@ -119,9 +130,104 @@ const PortfolioAdmin = () => {
 
   const resetForm = () => {
     setEditingItem(null);
-    setFormData({ title: '', category: '', description: '', image_url: '', demo_url: '' });
+    setFormData({ title: '', category: '', description: '', image_url: '', demo_url: '', published: true });
     setError(null);
   };
+
+  const handleBulkDelete = async () => {
+    try {
+      const { error } = await supabase
+        .from('portfolio')
+        .delete()
+        .in('id', selectedIds);
+
+      if (error) throw error;
+      toast({ title: `${selectedIds.length} item berhasil dihapus` });
+      setSelectedIds([]);
+      fetchPortfolio();
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const handleBulkPublish = async () => {
+    try {
+      const { error } = await supabase
+        .from('portfolio')
+        .update({ published: true })
+        .in('id', selectedIds);
+
+      if (error) throw error;
+      toast({ title: `${selectedIds.length} item berhasil dipublish` });
+      setSelectedIds([]);
+      fetchPortfolio();
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const handleBulkUnpublish = async () => {
+    try {
+      const { error } = await supabase
+        .from('portfolio')
+        .update({ published: false })
+        .in('id', selectedIds);
+
+      if (error) throw error;
+      toast({ title: `${selectedIds.length} item berhasil di-draft` });
+      setSelectedIds([]);
+      fetchPortfolio();
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.length === filteredPortfolio.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(filteredPortfolio.map(item => item.id));
+    }
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev =>
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
+  const uniqueCategories = useMemo(() => {
+    const categories = portfolio.map(item => item.category);
+    return Array.from(new Set(categories));
+  }, [portfolio]);
+
+  const filteredPortfolio = useMemo(() => {
+    return portfolio.filter(item => {
+      const matchesSearch = searchQuery === '' || 
+        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (item.description?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false);
+      
+      const matchesCategory = categoryFilter === 'all' || item.category === categoryFilter;
+      const matchesStatus = statusFilter === 'all' || 
+        (statusFilter === 'published' && item.published) ||
+        (statusFilter === 'draft' && !item.published);
+      
+      return matchesSearch && matchesCategory && matchesStatus;
+    }).sort((a, b) => {
+      switch (sortBy) {
+        case 'newest':
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        case 'oldest':
+          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        case 'title':
+          return a.title.localeCompare(b.title);
+        case 'title-desc':
+          return b.title.localeCompare(a.title);
+        default:
+          return 0;
+      }
+    });
+  }, [portfolio, searchQuery, categoryFilter, statusFilter, sortBy]);
 
   if (loading) return <div>Loading...</div>;
 
@@ -199,6 +305,19 @@ const PortfolioAdmin = () => {
                 />
               </div>
 
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="published"
+                  checked={formData.published}
+                  onCheckedChange={(checked) => 
+                    setFormData({ ...formData, published: checked as boolean })
+                  }
+                />
+                <Label htmlFor="published" className="cursor-pointer">
+                  Publish (tampilkan di website)
+                </Label>
+              </div>
+
               {error && (
                 <Alert variant="destructive">
                   <AlertDescription>{error}</AlertDescription>
@@ -222,9 +341,49 @@ const PortfolioAdmin = () => {
         </Dialog>
       </div>
 
+      <SearchFilterBar
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        categoryFilter={categoryFilter}
+        onCategoryChange={setCategoryFilter}
+        statusFilter={statusFilter}
+        onStatusChange={setStatusFilter}
+        sortBy={sortBy}
+        onSortChange={setSortBy}
+        categories={uniqueCategories}
+      />
+
+      <BulkActions
+        selectedCount={selectedIds.length}
+        onDelete={handleBulkDelete}
+        onPublish={handleBulkPublish}
+        onUnpublish={handleBulkUnpublish}
+        onClearSelection={() => setSelectedIds([])}
+      />
+
+      {filteredPortfolio.length > 0 && (
+        <div className="flex items-center gap-2 mb-4">
+          <Checkbox
+            id="select-all"
+            checked={selectedIds.length === filteredPortfolio.length}
+            onCheckedChange={toggleSelectAll}
+          />
+          <Label htmlFor="select-all" className="cursor-pointer text-sm">
+            Pilih Semua ({filteredPortfolio.length} item)
+          </Label>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {portfolio.map((item) => (
+        {filteredPortfolio.map((item) => (
           <Card key={item.id} className="glass shadow-elegant hover:shadow-glow transition-all duration-300">
+            <div className="absolute top-2 left-2 z-10 flex gap-2">
+              <Checkbox
+                checked={selectedIds.includes(item.id)}
+                onCheckedChange={() => toggleSelect(item.id)}
+                className="bg-background"
+              />
+            </div>
             {item.image_url && (
               <div className="relative overflow-hidden rounded-t-lg h-48">
                 <img
@@ -239,11 +398,16 @@ const PortfolioAdmin = () => {
               </div>
             )}
             <CardHeader className="pb-3">
-              <div className="flex justify-between items-start">
+              <div className="flex justify-between items-start gap-2">
                 <CardTitle className="text-lg">{item.title}</CardTitle>
-                <Badge variant="secondary" className="text-xs">
-                  {item.category}
-                </Badge>
+                <div className="flex gap-1 flex-wrap">
+                  <Badge variant={item.published ? "default" : "secondary"} className="text-xs">
+                    {item.published ? "Published" : "Draft"}
+                  </Badge>
+                  <Badge variant="outline" className="text-xs">
+                    {item.category}
+                  </Badge>
+                </div>
               </div>
               {item.description && (
                 <CardDescription className="text-sm">
@@ -288,6 +452,14 @@ const PortfolioAdmin = () => {
           </Card>
         ))}
       </div>
+
+      {filteredPortfolio.length === 0 && portfolio.length > 0 && (
+        <Card>
+          <CardContent className="text-center py-8">
+            <p className="text-muted-foreground">Tidak ada hasil yang sesuai dengan filter.</p>
+          </CardContent>
+        </Card>
+      )}
 
       {portfolio.length === 0 && (
         <Card>

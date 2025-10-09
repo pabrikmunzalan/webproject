@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,9 +9,13 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, Trash2, Star } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import ImageUpload from '@/components/admin/ImageUpload';
+import BulkActions from '@/components/admin/BulkActions';
+import SearchFilterBar from '@/components/admin/SearchFilterBar';
 
 interface Testimonial {
   id: string;
@@ -21,6 +25,7 @@ interface Testimonial {
   content: string;
   rating: number;
   avatar_url: string | null;
+  published: boolean;
   created_at: string;
 }
 
@@ -35,9 +40,14 @@ const TestimonialsAdmin = () => {
     client_company: '',
     content: '',
     rating: 5,
-    avatar_url: ''
+    avatar_url: '',
+    published: true
   });
   const [error, setError] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('newest');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -84,7 +94,7 @@ const TestimonialsAdmin = () => {
 
       setIsDialogOpen(false);
       setEditingItem(null);
-      setFormData({ client_name: '', client_position: '', client_company: '', content: '', rating: 5, avatar_url: '' });
+      setFormData({ client_name: '', client_position: '', client_company: '', content: '', rating: 5, avatar_url: '', published: true });
       fetchTestimonials();
     } catch (err: any) {
       setError(err.message);
@@ -99,7 +109,8 @@ const TestimonialsAdmin = () => {
       client_company: item.client_company || '',
       content: item.content,
       rating: item.rating,
-      avatar_url: item.avatar_url || ''
+      avatar_url: item.avatar_url || '',
+      published: item.published
     });
     setIsDialogOpen(true);
   };
@@ -123,9 +134,99 @@ const TestimonialsAdmin = () => {
 
   const resetForm = () => {
     setEditingItem(null);
-    setFormData({ client_name: '', client_position: '', client_company: '', content: '', rating: 5, avatar_url: '' });
+    setFormData({ client_name: '', client_position: '', client_company: '', content: '', rating: 5, avatar_url: '', published: true });
     setError(null);
   };
+
+  const handleBulkDelete = async () => {
+    try {
+      const { error } = await supabase
+        .from('testimonials')
+        .delete()
+        .in('id', selectedIds);
+
+      if (error) throw error;
+      toast({ title: `${selectedIds.length} item berhasil dihapus` });
+      setSelectedIds([]);
+      fetchTestimonials();
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const handleBulkPublish = async () => {
+    try {
+      const { error } = await supabase
+        .from('testimonials')
+        .update({ published: true })
+        .in('id', selectedIds);
+
+      if (error) throw error;
+      toast({ title: `${selectedIds.length} item berhasil dipublish` });
+      setSelectedIds([]);
+      fetchTestimonials();
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const handleBulkUnpublish = async () => {
+    try {
+      const { error } = await supabase
+        .from('testimonials')
+        .update({ published: false })
+        .in('id', selectedIds);
+
+      if (error) throw error;
+      toast({ title: `${selectedIds.length} item berhasil di-draft` });
+      setSelectedIds([]);
+      fetchTestimonials();
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.length === filteredTestimonials.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(filteredTestimonials.map(item => item.id));
+    }
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev =>
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
+  const filteredTestimonials = useMemo(() => {
+    return testimonials.filter(item => {
+      const matchesSearch = searchQuery === '' || 
+        item.client_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (item.client_company?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false);
+      
+      const matchesStatus = statusFilter === 'all' || 
+        (statusFilter === 'published' && item.published) ||
+        (statusFilter === 'draft' && !item.published);
+      
+      return matchesSearch && matchesStatus;
+    }).sort((a, b) => {
+      switch (sortBy) {
+        case 'newest':
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        case 'oldest':
+          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        case 'title':
+          return a.client_name.localeCompare(b.client_name);
+        case 'title-desc':
+          return b.client_name.localeCompare(a.client_name);
+        default:
+          return 0;
+      }
+    });
+  }, [testimonials, searchQuery, statusFilter, sortBy]);
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
@@ -232,6 +333,19 @@ const TestimonialsAdmin = () => {
                 label="Foto Klien (Opsional)"
               />
 
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="published"
+                  checked={formData.published}
+                  onCheckedChange={(checked) => 
+                    setFormData({ ...formData, published: checked as boolean })
+                  }
+                />
+                <Label htmlFor="published" className="cursor-pointer">
+                  Publish (tampilkan di website)
+                </Label>
+              </div>
+
               {error && (
                 <Alert variant="destructive">
                   <AlertDescription>{error}</AlertDescription>
@@ -255,9 +369,49 @@ const TestimonialsAdmin = () => {
         </Dialog>
       </div>
 
+      <SearchFilterBar
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        categoryFilter=""
+        onCategoryChange={() => {}}
+        statusFilter={statusFilter}
+        onStatusChange={setStatusFilter}
+        sortBy={sortBy}
+        onSortChange={setSortBy}
+        showCategoryFilter={false}
+      />
+
+      <BulkActions
+        selectedCount={selectedIds.length}
+        onDelete={handleBulkDelete}
+        onPublish={handleBulkPublish}
+        onUnpublish={handleBulkUnpublish}
+        onClearSelection={() => setSelectedIds([])}
+      />
+
+      {filteredTestimonials.length > 0 && (
+        <div className="flex items-center gap-2 mb-4">
+          <Checkbox
+            id="select-all"
+            checked={selectedIds.length === filteredTestimonials.length}
+            onCheckedChange={toggleSelectAll}
+          />
+          <Label htmlFor="select-all" className="cursor-pointer text-sm">
+            Pilih Semua ({filteredTestimonials.length} item)
+          </Label>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {testimonials.map((item) => (
-          <Card key={item.id} className="glass shadow-elegant hover:shadow-glow transition-all duration-300">
+        {filteredTestimonials.map((item) => (
+          <Card key={item.id} className="glass shadow-elegant hover:shadow-glow transition-all duration-300 relative">
+            <div className="absolute top-2 left-2 z-10">
+              <Checkbox
+                checked={selectedIds.includes(item.id)}
+                onCheckedChange={() => toggleSelect(item.id)}
+                className="bg-background"
+              />
+            </div>
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
@@ -276,8 +430,13 @@ const TestimonialsAdmin = () => {
                     )}
                   </div>
                 </div>
-                <div className="flex">
-                  {renderStars(item.rating)}
+                <div className="flex flex-col gap-1 items-end">
+                  <Badge variant={item.published ? "default" : "secondary"} className="text-xs">
+                    {item.published ? "Published" : "Draft"}
+                  </Badge>
+                  <div className="flex">
+                    {renderStars(item.rating)}
+                  </div>
                 </div>
               </div>
             </CardHeader>
@@ -307,6 +466,14 @@ const TestimonialsAdmin = () => {
           </Card>
         ))}
       </div>
+
+      {filteredTestimonials.length === 0 && testimonials.length > 0 && (
+        <Card>
+          <CardContent className="text-center py-8">
+            <p className="text-muted-foreground">Tidak ada hasil yang sesuai dengan filter.</p>
+          </CardContent>
+        </Card>
+      )}
 
       {testimonials.length === 0 && (
         <Card>
