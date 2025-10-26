@@ -1,16 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
-import { Button } from '@/components/ui/button';
-import { Menu, X, User, Settings, LogOut, Shield } from 'lucide-react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Menu, X } from 'lucide-react';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const { user, isAdmin, signOut } = useAuth();
   const location = useLocation();
 
   useEffect(() => {
@@ -55,10 +50,6 @@ const Navbar = () => {
     }
   };
 
-  const handleSignOut = async () => {
-    await signOut();
-  };
-
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/40 transition-transform duration-300 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}>
       <div className="container mx-auto px-4">
@@ -88,49 +79,6 @@ const Navbar = () => {
                 </Link>
               )
             ))}
-          </div>
-
-          {/* Auth Section */}
-          <div className="hidden md:flex items-center space-x-4">
-            {user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                    <Avatar className="h-8 w-8">
-                      <AvatarFallback>
-                        {user.email?.charAt(0).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end">
-                  <DropdownMenuItem disabled>
-                    <User className="mr-2 h-4 w-4" />
-                    <span>{user.email}</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  {isAdmin && (
-                    <>
-                      <DropdownMenuItem asChild>
-                        <Link to="/admin">
-                          <Shield className="mr-2 h-4 w-4" />
-                          <span>Admin Dashboard</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                    </>
-                  )}
-                  <DropdownMenuItem onClick={handleSignOut}>
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Keluar</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <Button asChild variant="outline">
-                <Link to="/auth">Masuk</Link>
-              </Button>
-            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -170,33 +118,6 @@ const Navbar = () => {
                   </Link>
                 )
               ))}
-              <div className="pt-3 border-t border-border/40">
-                {user ? (
-                  <div className="space-y-3">
-                    <div className="text-sm text-muted-foreground">
-                      {user.email}
-                    </div>
-                    {isAdmin && (
-                      <Button asChild variant="outline" className="w-full">
-                        <Link to="/admin" onClick={() => setIsMenuOpen(false)}>
-                          <Shield className="mr-2 h-4 w-4" />
-                          Admin Dashboard
-                        </Link>
-                      </Button>
-                    )}
-                    <Button onClick={handleSignOut} variant="outline" className="w-full">
-                      <LogOut className="mr-2 h-4 w-4" />
-                      Keluar
-                    </Button>
-                  </div>
-                ) : (
-                  <Button asChild variant="outline" className="w-full">
-                    <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
-                      Masuk
-                    </Link>
-                  </Button>
-                )}
-              </div>
             </div>
           </div>
         )}
