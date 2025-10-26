@@ -1,10 +1,63 @@
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Linkedin, Mail, Award, Code, Palette, Zap } from "lucide-react";
-import { getPublishedTeam } from "@/data/team";
+
+interface TeamMember {
+  id: string;
+  name: string;
+  position: string;
+  bio: string | null;
+  avatar_url: string | null;
+  linkedin_url: string | null;
+  github_url: string | null;
+}
 
 const Team = () => {
-  const teamMembers = getPublishedTeam();
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchTeam();
+
+    // Setup realtime subscription
+    const channel = supabase
+      .channel('team-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'team'
+        },
+        () => {
+          fetchTeam();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const fetchTeam = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('team')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setTeamMembers(data || []);
+    } catch (error) {
+      console.error('Error fetching team:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleWhatsAppClick = () => {
     const phoneNumber = "6282241590417";
@@ -12,6 +65,32 @@ const Team = () => {
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
+
+  if (loading) {
+    return (
+      <section id="team" className="py-20 px-4 bg-gradient-to-b from-background to-secondary/10 relative overflow-hidden">
+        <div className="container mx-auto max-w-7xl">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-4">
+              Tim <span className="text-primary">Professional</span>
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[1, 2, 3].map((i) => (
+              <Card key={i} className="glass shadow-elegant animate-pulse">
+                <div className="h-80 bg-muted rounded-t-lg"></div>
+                <CardContent className="p-6">
+                  <div className="h-4 bg-muted rounded mb-2"></div>
+                  <div className="h-3 bg-muted rounded mb-4 w-2/3"></div>
+                  <div className="h-20 bg-muted rounded"></div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="team" className="py-20 px-4 bg-gradient-to-b from-background to-secondary/10 relative overflow-hidden">

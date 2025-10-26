@@ -1,11 +1,64 @@
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Star, Quote, CheckCircle } from "lucide-react";
-import { getPublishedTestimonials } from "@/data/testimonials";
+
+interface Testimonial {
+  id: string;
+  client_name: string;
+  client_company: string | null;
+  client_position: string | null;
+  content: string;
+  rating: number | null;
+  avatar_url: string | null;
+}
 
 const Testimonials = () => {
-  const testimonials = getPublishedTestimonials().slice(0, 6);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchTestimonials();
+
+    // Setup realtime subscription
+    const channel = supabase
+      .channel('testimonials-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'testimonials'
+        },
+        () => {
+          fetchTestimonials();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const fetchTestimonials = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('testimonials')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(6);
+
+      if (error) throw error;
+      setTestimonials(data || []);
+    } catch (error) {
+      console.error('Error fetching testimonials:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleWhatsAppClick = () => {
     const phoneNumber = "6282241590417";
@@ -13,6 +66,31 @@ const Testimonials = () => {
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
+
+  if (loading) {
+    return (
+      <section id="testimonials" className="py-20 px-4 bg-gradient-to-b from-background to-primary/5 relative overflow-hidden">
+        <div className="container mx-auto max-w-7xl">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-4">
+              Testimoni <span className="text-primary">Klien</span>
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <Card key={i} className="glass shadow-elegant animate-pulse">
+                <CardContent className="p-6">
+                  <div className="h-4 bg-muted rounded mb-4"></div>
+                  <div className="h-20 bg-muted rounded mb-4"></div>
+                  <div className="h-4 bg-muted rounded"></div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="testimonials" className="py-20 px-4 bg-gradient-to-b from-background to-primary/5 relative overflow-hidden">

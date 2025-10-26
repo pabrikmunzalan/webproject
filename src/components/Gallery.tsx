@@ -1,11 +1,83 @@
-import { Card } from "@/components/ui/card";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { ZoomIn, Camera } from "lucide-react";
-import { getPublishedGallery } from "@/data/gallery";
+
+interface GalleryItem {
+  id: string;
+  title: string;
+  description: string | null;
+  image_url: string;
+  category: string | null;
+}
 
 const Gallery = () => {
-  const galleryItems = getPublishedGallery();
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchGallery();
+
+    // Setup realtime subscription
+    const channel = supabase
+      .channel('gallery-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'gallery'
+        },
+        () => {
+          fetchGallery();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const fetchGallery = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('gallery')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(12);
+
+      if (error) throw error;
+      setGalleryItems(data || []);
+    } catch (error) {
+      console.error('Error fetching gallery:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <section id="gallery" className="py-20 px-4 bg-gradient-to-b from-primary/5 to-background relative overflow-hidden">
+        <div className="container mx-auto max-w-7xl">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-4">
+              Gallery <span className="text-primary">Karya</span>
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+              <Card key={i} className="glass shadow-elegant animate-pulse overflow-hidden">
+                <div className="aspect-square bg-muted"></div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="gallery" className="py-20 px-4 bg-gradient-to-b from-primary/5 to-background relative overflow-hidden">

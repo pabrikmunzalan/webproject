@@ -1,10 +1,62 @@
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Eye } from "lucide-react";
-import { getPublishedPortfolio } from "@/data/portfolio";
+
+interface PortfolioItem {
+  id: string;
+  title: string;
+  category: string;
+  description: string | null;
+  image_url: string | null;
+  demo_url: string | null;
+}
 
 const Portfolio = () => {
-  const portfolioItems = getPublishedPortfolio().slice(0, 6); // Show only 6 items on homepage
+  const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchPortfolio();
+
+    // Setup realtime subscription
+    const channel = supabase
+      .channel('portfolio-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'portfolio'
+        },
+        () => {
+          fetchPortfolio();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const fetchPortfolio = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('portfolio')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(6); // Show only 6 items on homepage
+
+      if (error) throw error;
+      setPortfolioItems(data || []);
+    } catch (error) {
+      console.error('Error fetching portfolio:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleWhatsAppClick = () => {
     const phoneNumber = "6282241590417";
@@ -12,6 +64,35 @@ const Portfolio = () => {
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
+
+  if (loading) {
+    return (
+      <section id="portfolio" className="py-20 px-4 bg-gradient-to-b from-secondary/5 to-background relative overflow-hidden">
+        <div className="container mx-auto max-w-7xl">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-4">
+              Portfolio <span className="text-primary">Terbaru</span>
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Lihat berbagai website yang telah kami buat untuk klien dari berbagai industri
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <Card key={i} className="glass shadow-elegant animate-pulse">
+                <div className="h-64 bg-muted rounded-t-lg"></div>
+                <CardContent className="p-6">
+                  <div className="h-4 bg-muted rounded mb-2"></div>
+                  <div className="h-3 bg-muted rounded mb-4 w-2/3"></div>
+                  <div className="h-3 bg-muted rounded w-full"></div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="portfolio" className="py-20 px-4 bg-gradient-to-b from-secondary/5 to-background relative overflow-hidden">
@@ -72,12 +153,14 @@ const Portfolio = () => {
                           variant="ghost"
                           onClick={(e) => {
                             e.stopPropagation();
+                            // Check if it's a video file
                             const videoExtensions = ['.mp4', '.webm', '.mov', '.avi', '.mkv'];
                             const isVideo = videoExtensions.some(ext => 
                               item.demo_url!.toLowerCase().includes(ext)
                             );
                             
                             if (isVideo) {
+                              // Open video in modal instead of new tab
                               const modal = document.createElement('div');
                               modal.className = 'fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4';
                               modal.innerHTML = `
@@ -98,6 +181,7 @@ const Portfolio = () => {
                               
                               document.body.appendChild(modal);
                             } else {
+                              // Open link normally
                               window.open(item.demo_url!, '_blank');
                             }
                           }}
