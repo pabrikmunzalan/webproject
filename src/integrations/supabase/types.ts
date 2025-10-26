@@ -21,6 +21,7 @@ export type Database = {
           description: string | null
           id: string
           image_url: string
+          published: boolean | null
           title: string
           updated_at: string
         }
@@ -30,6 +31,7 @@ export type Database = {
           description?: string | null
           id?: string
           image_url: string
+          published?: boolean | null
           title: string
           updated_at?: string
         }
@@ -39,6 +41,7 @@ export type Database = {
           description?: string | null
           id?: string
           image_url?: string
+          published?: boolean | null
           title?: string
           updated_at?: string
         }
@@ -52,6 +55,7 @@ export type Database = {
           description: string | null
           id: string
           image_url: string | null
+          published: boolean | null
           title: string
           updated_at: string
         }
@@ -62,6 +66,7 @@ export type Database = {
           description?: string | null
           id?: string
           image_url?: string | null
+          published?: boolean | null
           title: string
           updated_at?: string
         }
@@ -72,6 +77,7 @@ export type Database = {
           description?: string | null
           id?: string
           image_url?: string | null
+          published?: boolean | null
           title?: string
           updated_at?: string
         }
@@ -114,6 +120,7 @@ export type Database = {
           linkedin_url: string | null
           name: string
           position: string
+          published: boolean | null
           updated_at: string
         }
         Insert: {
@@ -125,6 +132,7 @@ export type Database = {
           linkedin_url?: string | null
           name: string
           position: string
+          published?: boolean | null
           updated_at?: string
         }
         Update: {
@@ -136,6 +144,7 @@ export type Database = {
           linkedin_url?: string | null
           name?: string
           position?: string
+          published?: boolean | null
           updated_at?: string
         }
         Relationships: []
@@ -149,6 +158,7 @@ export type Database = {
           content: string
           created_at: string
           id: string
+          published: boolean | null
           rating: number | null
           updated_at: string
         }
@@ -160,6 +170,7 @@ export type Database = {
           content: string
           created_at?: string
           id?: string
+          published?: boolean | null
           rating?: number | null
           updated_at?: string
         }
@@ -171,6 +182,7 @@ export type Database = {
           content?: string
           created_at?: string
           id?: string
+          published?: boolean | null
           rating?: number | null
           updated_at?: string
         }
