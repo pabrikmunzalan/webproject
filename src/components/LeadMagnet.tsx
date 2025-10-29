@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Download, FileText, CheckCircle, Users, Star, Gift, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
+import { CONTACT_CONFIG } from "@/config/contact";
 
 const LeadMagnet = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -92,7 +93,7 @@ const LeadMagnet = () => {
     }
 
     const message = `Halo! Nama saya ${name}. Email: ${email}. Saya ingin download "${mainMagnet.title}". Terima kasih!`;
-    const whatsappUrl = `https://wa.me/6282241590417?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = CONTACT_CONFIG.whatsapp.createUrl(message);
     
     toast.success("Link download akan dikirim ke WhatsApp Anda!");
     window.open(whatsappUrl, '_blank');
@@ -103,9 +104,7 @@ const LeadMagnet = () => {
   };
 
   const handleMoreResources = () => {
-    const phoneNumber = "6282241590417";
-    const message = "Halo! Saya tertarik untuk melihat resource dan panduan lainnya. Bisa dibantu?";
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = CONTACT_CONFIG.whatsapp.createUrl(CONTACT_CONFIG.messages.resourceInquiry);
     window.open(whatsappUrl, '_blank');
   };
 

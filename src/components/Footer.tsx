@@ -1,11 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Phone, Mail, MapPin, Clock } from "lucide-react";
+import { CONTACT_CONFIG } from "@/config/contact";
 
 const Footer = () => {
   const handleWhatsAppClick = () => {
-    const phoneNumber = "6282241590417";
-    const message = "Halo! Saya ingin konsultasi tentang jasa pembuatan website.";
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = CONTACT_CONFIG.whatsapp.createUrl(CONTACT_CONFIG.messages.consultation);
     window.open(whatsappUrl, '_blank');
   };
 
@@ -18,7 +17,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="space-y-4">
-            <h3 className="text-2xl font-bold text-primary">WebStudio Pro</h3>
+            <h3 className="text-2xl font-bold text-primary">{CONTACT_CONFIG.company.name}</h3>
             <p className="text-muted-foreground leading-relaxed">
               Jasa pembuatan website professional untuk mengembangkan bisnis Anda secara online. 
               Dengan harga terjangkau dan kualitas terbaik.
@@ -62,19 +61,19 @@ const Footer = () => {
             <div className="space-y-3">
               <div className="flex items-center space-x-3 text-muted-foreground">
                 <Phone className="h-4 w-4 text-primary" />
-                <span>+62 822-4159-0417</span>
+                <span>{CONTACT_CONFIG.company.phoneDisplay}</span>
               </div>
               <div className="flex items-center space-x-3 text-muted-foreground">
                 <Mail className="h-4 w-4 text-primary" />
-                <span>info@webstudiopro.com</span>
+                <span>{CONTACT_CONFIG.company.email}</span>
               </div>
               <div className="flex items-center space-x-3 text-muted-foreground">
                 <MapPin className="h-4 w-4 text-primary" />
-                <span>Indonesia</span>
+                <span>{CONTACT_CONFIG.company.address}</span>
               </div>
               <div className="flex items-center space-x-3 text-muted-foreground">
                 <Clock className="h-4 w-4 text-primary" />
-                <span>24/7 Online Support</span>
+                <span>{CONTACT_CONFIG.company.supportHours}</span>
               </div>
             </div>
           </div>
@@ -83,7 +82,7 @@ const Footer = () => {
         <div className="border-t mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-muted-foreground text-center md:text-left">
-              © 2024 WebStudio Pro. All rights reserved. Jasa Pembuatan Website Professional.
+              © 2024 {CONTACT_CONFIG.company.name}. All rights reserved. Jasa Pembuatan Website Professional.
             </p>
             <div className="flex space-x-6 text-sm text-muted-foreground">
               <button className="hover:text-primary transition-colors">Privacy Policy</button>

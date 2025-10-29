@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { MessageCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { CONTACT_CONFIG } from "@/config/contact";
 
 const FloatingWhatsApp = () => {
   const [isVisible, setIsVisible] = useState(true);
@@ -24,9 +25,7 @@ const FloatingWhatsApp = () => {
   }, []);
 
   const handleWhatsAppClick = () => {
-    const phoneNumber = "6282241590417";
-    const message = "Halo! Saya tertarik dengan jasa pembuatan website. Bisa info lebih lanjut?";
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = CONTACT_CONFIG.whatsapp.createUrl(CONTACT_CONFIG.messages.generalInquiry);
     window.open(whatsappUrl, '_blank');
   };
 

@@ -1,17 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Smartphone, Globe, Zap, Play } from "lucide-react";
+import { CONTACT_CONFIG } from "@/config/contact";
 
 const Hero = () => {
   const handleWhatsAppClick = () => {
-    const phoneNumber = "6282241590417";
-    const message = "Halo! Saya tertarik dengan jasa pembuatan website. Bisa info lebih lanjut?";
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = CONTACT_CONFIG.whatsapp.createUrl(CONTACT_CONFIG.messages.generalInquiry);
     window.open(whatsappUrl, '_blank');
   };
 
   const handleVideoPlay = () => {
-    const videoMessage = "Halo! Saya ingin melihat demo video dan portfolio lengkap website yang pernah dibuat.";
-    const whatsappUrl = `https://wa.me/6282241590417?text=${encodeURIComponent(videoMessage)}`;
+    const whatsappUrl = CONTACT_CONFIG.whatsapp.createUrl(CONTACT_CONFIG.messages.demoRequest);
     window.open(whatsappUrl, '_blank');
   };
   return (

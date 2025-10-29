@@ -4,7 +4,135 @@ Panduan lengkap untuk mengedit konten website tanpa perlu menggunakan database a
 
 ---
 
-## 📍 Lokasi File Data
+## 📋 Daftar Isi
+1. [Konfigurasi Kontak & WhatsApp](#-1-konfigurasi-kontak--whatsapp)
+2. [Environment Variables](#-2-environment-variables)
+3. [Edit Gallery](#-3-edit-gallery)
+4. [Edit Portfolio](#-4-edit-portfolio)
+5. [Edit Testimonials](#-5-edit-testimonials)
+6. [Edit Team](#-6-edit-team)
+7. [Deploy Perubahan](#-7-deploy-perubahan)
+
+---
+
+## 🔧 1. Konfigurasi Kontak & WhatsApp
+
+### ⚠️ PENTING: Centralized Configuration
+
+**Semua nomor WhatsApp, email, dan informasi kontak sekarang dikelola di satu file:**
+
+**File:** `src/config/contact.ts`
+
+```typescript
+export const CONTACT_CONFIG = {
+  whatsapp: {
+    number: '6282241590417', // Edit nomor WhatsApp di sini
+  },
+  
+  company: {
+    name: 'WebStudio Pro',
+    email: 'info@webstudiopro.com',
+    phone: '+62 822-4159-0417',
+    address: 'Indonesia',
+    supportHours: '24/7 Online Support'
+  },
+
+  social: {
+    instagram: 'https://instagram.com/webstudiopro',
+    facebook: 'https://facebook.com/webstudiopro',
+    linkedin: 'https://linkedin.com/company/webstudiopro',
+  }
+};
+```
+
+### Cara Edit Nomor WhatsApp:
+
+1. Buka file `src/config/contact.ts`
+2. Cari bagian `whatsapp: { number: '...' }`
+3. Ganti nomor dengan format: `62` + nomor tanpa 0
+   - **Contoh:** `082241590417` → `6282241590417`
+4. Save file
+5. Nomor WhatsApp akan otomatis berubah di **seluruh website**!
+
+### Keuntungan Centralized Config:
+- ✅ Edit sekali, berubah di semua halaman
+- ✅ Tidak ada nomor yang terlewat
+- ✅ Mudah maintenance
+- ✅ Mengurangi human error
+
+---
+
+## 🌍 2. Environment Variables
+
+### Apa itu Environment Variables?
+
+Environment variables memungkinkan Anda mengatur konfigurasi tanpa mengubah kode. Sangat berguna untuk:
+- Beda konfigurasi antara development & production
+- Menyimpan data sensitif (API keys)
+- Mudah update tanpa edit code
+
+### Setup File `.env`
+
+**Langkah-langkah:**
+
+1. **Copy file `.env.example` menjadi `.env`:**
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Edit file `.env`:**
+   ```env
+   # Contact Configuration
+   VITE_WHATSAPP_NUMBER=6282241590417
+   VITE_COMPANY_EMAIL=info@webstudiopro.com
+   VITE_COMPANY_NAME=WebStudio Pro
+   VITE_COMPANY_PHONE=+62 822-4159-0417
+   
+   # Social Media
+   VITE_INSTAGRAM_URL=https://instagram.com/webstudiopro
+   VITE_FACEBOOK_URL=https://facebook.com/webstudiopro
+   
+   # App URL
+   VITE_APP_URL=http://localhost:8080
+   ```
+
+3. **Restart development server setelah edit `.env`:**
+   ```bash
+   npm run dev
+   ```
+
+### Environment Variables untuk Production:
+
+Saat deploy ke hosting (Vercel/Netlify/dll):
+
+#### **Vercel:**
+1. Buka Project Settings
+2. Pilih "Environment Variables"
+3. Tambahkan setiap variable dari `.env.example`
+4. Redeploy project
+
+#### **Netlify:**
+1. Buka Site Settings
+2. Pilih "Build & Deploy" → "Environment"
+3. Tambahkan setiap variable dari `.env.example`
+4. Redeploy site
+
+### Prioritas Loading:
+
+File `src/config/contact.ts` akan menggunakan nilai dari:
+1. **Environment variables (`.env`)** - PRIORITAS TERTINGGI ✅
+2. **Default hardcoded values** - fallback jika env var tidak ada
+
+Contoh:
+```typescript
+// Akan menggunakan VITE_WHATSAPP_NUMBER dari .env
+// Jika tidak ada, gunakan '6282241590417'
+number: import.meta.env.VITE_WHATSAPP_NUMBER || '6282241590417'
+```
+
+---
+
+## 📍 Lokasi File Data Konten
 
 Semua data konten website ada di folder `src/data/`:
 
@@ -18,7 +146,7 @@ src/data/
 
 ---
 
-## 🎨 Cara Menambah Item Gallery
+## 🎨 3. Edit Gallery
 
 **File:** `src/data/gallery.ts`
 
@@ -55,14 +183,15 @@ src/data/
 3. Klik kanan pada gambar → Copy Image Address
 4. Paste ke `image_url`
 
-**Option 3: Cloudinary (Profesional)**
+**Option 3: Cloudinary (Profesional, Optimized)**
 1. Signup gratis di https://cloudinary.com
 2. Upload gambar via dashboard
 3. Copy URL CDN → Paste ke `image_url`
+4. Bonus: Auto optimization & responsive images
 
 ---
 
-## 💼 Cara Menambah Portfolio
+## 💼 4. Edit Portfolio
 
 **File:** `src/data/portfolio.ts`
 
@@ -89,7 +218,7 @@ src/data/
 
 ---
 
-## 💬 Cara Menambah Testimoni
+## 💬 5. Edit Testimonials
 
 **File:** `src/data/testimonials.ts`
 
@@ -128,7 +257,7 @@ Ganti `NamaKlien` dengan nama client untuk mendapat avatar unik.
 
 ---
 
-## 👥 Cara Menambah Anggota Tim
+## 👥 6. Edit Team
 
 **File:** `src/data/team.ts`
 
@@ -172,7 +301,7 @@ published: true  // Item akan tampil di website
 
 ---
 
-## 🚀 Cara Deploy Perubahan
+## 🚀 7. Deploy Perubahan
 
 ### Development Mode (Local Testing):
 
@@ -190,22 +319,34 @@ published: true  // Item akan tampil di website
 2. Klik tombol "Publish" di top-right
 3. Website akan update otomatis
 
-**Option 2: Manual Build**
+**Option 2: Manual Build & Deploy**
 1. Build project:
    ```bash
    npm run build
    ```
 2. Upload folder `dist` ke hosting Anda
 
+**Option 3: Git + Vercel/Netlify (Recommended)**
+1. Push changes ke GitHub:
+   ```bash
+   git add .
+   git commit -m "Update content"
+   git push
+   ```
+2. Vercel/Netlify akan auto-deploy
+
 ---
 
 ## 📋 Checklist Sebelum Publish
 
+- [ ] Semua nomor WhatsApp & email sudah benar di `src/config/contact.ts`
+- [ ] Environment variables sudah di-set (production)
 - [ ] Semua gambar sudah ter-upload dan URL valid
 - [ ] Tidak ada typo di title atau description
 - [ ] `published: true` untuk item yang mau ditampilkan
 - [ ] Test di local dulu (`npm run dev`)
 - [ ] Check responsive di mobile & desktop
+- [ ] Test semua WhatsApp buttons berfungsi
 
 ---
 
@@ -216,6 +357,7 @@ published: true  // Item akan tampil di website
 3. **ID Unique:** Setiap item harus punya ID unik (tidak boleh sama)
 4. **String Format:** Text harus dalam tanda petik `"text"`
 5. **Boolean:** `true` dan `false` tanpa petik
+6. **Environment Variables:** Jangan commit file `.env` ke Git! (sudah ada di `.gitignore`)
 
 ---
 
@@ -233,13 +375,21 @@ published: true  // Item akan tampil di website
 - **Penyebab:** Cache browser atau belum deploy
 - **Solusi:** Hard refresh browser (Ctrl+Shift+R) atau redeploy
 
+### WhatsApp button tidak berfungsi
+- **Penyebab:** Nomor WhatsApp format salah
+- **Solusi:** Format harus `62` + nomor (contoh: `6282241590417`)
+
+### Environment variables tidak terbaca
+- **Penyebab:** Belum restart dev server atau typo di `.env`
+- **Solusi:** Restart dev server (`npm run dev`) dan cek nama variable
+
 ---
 
 ## 📞 Butuh Bantuan?
 
 Jika ada pertanyaan atau kesulitan, silakan hubungi:
-- WhatsApp: +62 822-4159-0417
-- Email: support@webpro.com
+- **WhatsApp:** Lihat nomor di `src/config/contact.ts`
+- **Email:** Lihat email di `src/config/contact.ts`
 
 ---
 
