@@ -39,7 +39,8 @@ export const CONTACT_CONFIG = {
     generalInquiry: 'Halo! Saya tertarik dengan jasa pembuatan website. Bisa info lebih lanjut?',
     consultation: 'Halo! Saya ingin konsultasi tentang jasa pembuatan website.',
     demoRequest: 'Halo! Saya ingin melihat demo video dan portfolio lengkap website yang pernah dibuat.',
-    resourceInquiry: 'Halo! Saya tertarik untuk melihat resource dan panduan lainnya. Bisa dibantu?'
+    resourceInquiry: 'Halo! Saya tertarik untuk melihat resource dan panduan lainnya. Bisa dibantu?',
+    blogInquiry: 'Halo! Saya membaca artikel di blog dan tertarik untuk konsultasi tentang website. Bisa dibantu?'
   }
 } as const;
 
